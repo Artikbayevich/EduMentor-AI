@@ -23,17 +23,24 @@ const MOCK_SUBJECTS = [
 ];
 
 const MOCK_DEADLINES = [
-  { id: 1, subject: "Ma'lumotlar bazasi", type: "Oraliq nazorat", daysAway: 2 }, // mapped props
-  { id: 2, subject: "Kriptografiya", type: "Topshiriq", daysAway: 0 },
-  { id: 3, subject: "Dasturlash II", type: "Yakuniy", daysAway: 5 }
+  { id: 1, subject: "Ma'lumotlar bazasi", type: "Oraliq nazorat", daysAway: 2, exactDate: "26-May, 23:59" }, // mapped props
+  { id: 2, subject: "Kriptografiya", type: "Topshiriq", daysAway: 0, exactDate: "Bugun, 23:59" },
+  { id: 3, subject: "Dasturlash II", type: "Yakuniy", daysAway: 5, exactDate: "29-May, 23:59" }
 ];
 
 const MOCK_CHART_DATA = [
   { week: '1-hafta', attendance: 100 }, 
-  { week: '2-hafta', attendance: 85 },
-  { week: '3-hafta', attendance: 90 },
-  { week: '4-hafta', attendance: 70 },
-  { week: '5-hafta', attendance: 95 }
+  { week: '2-hafta', attendance: 100 },
+  { week: '3-hafta', attendance: 96 },
+  { week: '4-hafta', attendance: 92 },
+  { week: '5-hafta', attendance: 88 },
+  { week: '6-hafta', attendance: 82 },
+  { week: '7-hafta', attendance: 78 },
+  { week: '8-hafta', attendance: 85 },
+  { week: '9-hafta', attendance: 85 },
+  { week: '10-hafta', attendance: 88 },
+  { week: '11-hafta', attendance: 92 },
+  { week: '12-hafta', attendance: 95 },
 ];
 
 const queryClient = new QueryClient();

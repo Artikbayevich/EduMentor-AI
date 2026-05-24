@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AreaChart,
   Area,
@@ -34,6 +34,18 @@ export default function Dashboard({ student, subjects, deadlines, chartData }) {
   const safeSubjects = subjects || [];
   const safeDeadlines = deadlines || [];
   const safeChartData = chartData || [];
+
+  const [showNbModal, setShowNbModal] = useState(false);
+  const [selectedNbSubject, setSelectedNbSubject] = useState(null);
+
+  // Mock NB History Data
+  const getMockNbHistory = (subjectName) => [
+    { id: 1, date: "12-May, 2026", topic: "1-amaliyot: Asosiy tushunchalar", recovered: true },
+    { id: 2, date: "18-May, 2026", topic: "3-ma'ruza: Obyektga yo'naltirilgan yondashuv", recovered: false },
+    { id: 3, date: "22-May, 2026", topic: "4-amaliyot: Xatoliklar bilan ishlash", recovered: false },
+    { id: 4, date: "25-May, 2026", topic: "5-ma'ruza: Ma'lumotlarni shifrlash", recovered: false },
+    { id: 5, date: "28-May, 2026", topic: "6-amaliyot: Shifrlash algoritmlari", recovered: false },
+  ];
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -124,7 +136,10 @@ export default function Dashboard({ student, subjects, deadlines, chartData }) {
           <section className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] p-6 sm:p-8 border border-white/80">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-slate-800">NB Holati (Davomat)</h2>
-              <button className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors">
+              <button 
+                onClick={() => { setSelectedNbSubject(null); setShowNbModal(true); }}
+                className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
+              >
                 Barchasi <ChevronRight className="w-4 h-4" />
               </button>
             </div>
@@ -152,7 +167,11 @@ export default function Dashboard({ student, subjects, deadlines, chartData }) {
                 const Icon = theme.icon;
 
                 return (
-                  <div key={subject.id} className={`p-5 rounded-2xl border ${theme.bg} ${theme.border} hover:shadow-md transition-shadow cursor-pointer`}>
+                  <div 
+                    key={subject.id} 
+                    onClick={() => { setSelectedNbSubject(subject); setShowNbModal(true); }}
+                    className={`p-5 rounded-2xl border ${theme.bg} ${theme.border} hover:shadow-md transition-shadow cursor-pointer`}
+                  >
                     <div className="flex justify-between items-start mb-4">
                       <h3 className={`font-bold ${theme.text} line-clamp-1 flex-1 pr-2`}>{subject.name}</h3>
                       <Icon className={`w-5 h-5 ${theme.text}`} />
@@ -290,7 +309,7 @@ export default function Dashboard({ student, subjects, deadlines, chartData }) {
                             isToday ? 'text-rose-600' : isUrgent ? 'text-amber-600' : 'text-indigo-600'
                           }`}>
                             <Clock className="w-3 h-3" />
-                            {isToday ? 'Bugun!' : `${deadline.daysAway} kun`}
+                            {deadline.exactDate || (isToday ? 'Bugun!' : `${deadline.daysAway} kun`)}
                           </span>
                         </div>
                       </div>
@@ -315,6 +334,110 @@ export default function Dashboard({ student, subjects, deadlines, chartData }) {
           </section>
           
         </div>
+      {/* NB Details Modal */}
+      {showNbModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">
+                  {selectedNbSubject ? selectedNbSubject.name : "Joriy Semestr: 3-kurs, 6-semestr"}
+                </h3>
+                <p className="text-sm text-slate-500 font-medium mt-1">
+                  {selectedNbSubject ? "Qoldirilgan darslar va o'zlashtirish holati" : "Jami o'tilayotgan fanlar bo'yicha davomat"}
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowNbModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            {selectedNbSubject ? (
+              <div className="space-y-4">
+                <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex justify-between items-center mb-6">
+                  <div>
+                    <p className="text-sm text-blue-600 font-bold mb-1">Jami NB: {selectedNbSubject.currentNb} / {selectedNbSubject.maxNb}</p>
+                    <p className="text-xs text-blue-500">Yana {selectedNbSubject.remaining} ta qoldi</p>
+                  </div>
+                  <div className="text-right">
+                    <button 
+                      onClick={() => setSelectedNbSubject(null)}
+                      className="text-xs font-bold text-slate-500 hover:text-slate-800 underline"
+                    >
+                      Orqaga qaytish
+                    </button>
+                  </div>
+                </div>
+
+                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Qoldirilgan darslar (Sana bo'yicha)</h4>
+                
+                <div className="space-y-3">
+                  {getMockNbHistory(selectedNbSubject.name).slice(0, selectedNbSubject.currentNb).map((nbItem, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-white hover:border-slate-200 transition-colors">
+                      <div className="flex items-start gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${nbItem.recovered ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                          <Calendar className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-800 text-sm">{nbItem.date}</p>
+                          <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{nbItem.topic}</p>
+                        </div>
+                      </div>
+                      <div className="text-right ml-2 shrink-0">
+                        {nbItem.recovered ? (
+                          <span className="inline-flex items-center gap-1 bg-green-50 text-green-600 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> O'zlashtirilgan
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase">
+                            <AlertCircle className="w-3.5 h-3.5" /> Qoplanmagan
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {selectedNbSubject.currentNb === 0 && (
+                     <div className="text-center py-6 text-slate-400 font-medium">Bu fandan dars qoldirilmagan.</div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                {safeSubjects.map(subject => {
+                   const percent = Math.min((subject.currentNb / subject.maxNb) * 100, 100);
+                   return (
+                     <div 
+                       key={subject.id} 
+                       onClick={() => setSelectedNbSubject(subject)}
+                       className="p-4 border border-slate-100 rounded-2xl hover:bg-slate-50 cursor-pointer transition-colors flex justify-between items-center group"
+                     >
+                       <div className="flex-1">
+                         <h4 className="font-bold text-slate-800 text-sm mb-2">{subject.name}</h4>
+                         <div className="flex items-center gap-3">
+                           <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                             <div 
+                               className={`h-full rounded-full ${percent > 70 ? 'bg-red-500' : percent > 40 ? 'bg-yellow-500' : 'bg-green-500'}`} 
+                               style={{ width: `${percent}%` }}
+                             />
+                           </div>
+                           <span className="text-xs font-bold text-slate-500 whitespace-nowrap">{subject.currentNb} / {subject.maxNb} NB</span>
+                         </div>
+                       </div>
+                       <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-slate-500 ml-4 transition-colors" />
+                     </div>
+                   );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
