@@ -86,7 +86,8 @@ async def list_p2p_requests(
     # Exclude user's own requests from the feed
     query = query.where(P2PRequest.requester_id != current_user.id)
 
-    total_query = select(db.func.count()).select_from(query.subquery())
+    from sqlalchemy import func
+    total_query = select(func.count()).select_from(query.subquery())
     total = await db.scalar(total_query)
 
     query = query.order_by(P2PRequest.created_at.desc()).offset(skip).limit(limit)
@@ -260,7 +261,8 @@ async def get_my_matches(
         )
     )
 
-    total_query = select(db.func.count()).select_from(query.subquery())
+    from sqlalchemy import func
+    total_query = select(func.count()).select_from(query.subquery())
     total = await db.scalar(total_query)
 
     query = query.order_by(P2PMatch.created_at.desc()).offset(skip).limit(limit)

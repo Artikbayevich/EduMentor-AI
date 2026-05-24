@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
 
@@ -25,7 +26,8 @@ const submitTestAnswers = async ({ lessonId, answers }) => {
   return res.json();
 };
 
-export default function LessonPage({ lessonId }) {
+export default function LessonPage() {
+  const { lessonId } = useParams();
   const [testStarted, setTestStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});

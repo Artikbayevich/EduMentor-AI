@@ -1,5 +1,5 @@
 """
-bot/main.py — Sezgi Telegram bot entry point.
+bot/main.py — EduMentor AI Telegram bot entry point.
 
 Run standalone:
     python -m bot.main

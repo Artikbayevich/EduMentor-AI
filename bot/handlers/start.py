@@ -20,6 +20,20 @@ router = Router(name="start")
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext, is_authenticated: bool) -> None:
+    # Hackathon Demo: Always bind admin_hemis to the first person who starts the bot
+    from core.database import AsyncSessionLocal
+    from models.user import User
+    from sqlalchemy import select
+    async with AsyncSessionLocal() as db:
+        user = (await db.execute(select(User).where(User.hemis_id == "admin_hemis"))).scalar_one_or_none()
+        if user and user.telegram_id != message.from_user.id:
+            user.telegram_id = message.from_user.id
+            await db.commit()
+            await message.answer("✅ Tabriklaymiz! Veb-sayt va Telegram bot muvaffaqiyatli ulandi.\nEndi sizga barcha bildirishnomalar kelib turadi.")
+            return
+        elif user and user.telegram_id == message.from_user.id:
+            pass # already linked
+
     if is_authenticated:
         data = await state.get_data()
         full_name = data.get("full_name", "Foydalanuvchi")

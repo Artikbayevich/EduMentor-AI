@@ -16,7 +16,7 @@ class BotSettings(BaseSettings):
     )
 
     BOT_TOKEN: str = ""
-    WEBSITE_URL: str = "https://sezgi.edu.uz"
+    WEBSITE_URL: str = "https://edumentor.ai"
 
     # Re-expose what the bot needs from the main config
     HEMIS_CLIENT_ID: str = ""

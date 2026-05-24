@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     )
 
     # App
-    PROJECT_NAME: str = "Sezgi"
+    PROJECT_NAME: str = "EduMentor AI"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
     DEBUG: bool = False
@@ -45,12 +45,13 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
-    EMAILS_FROM_EMAIL: str = "noreply@sezgi.edu"
-    EMAILS_FROM_NAME: str = "Sezgi Platform"
+    EMAILS_FROM_EMAIL: str = "noreply@edumentor.ai"
+    EMAILS_FROM_NAME: str = "EduMentor AI Platform"
 
     # AI
     OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
+    CHROMA_PERSIST_DIR: str = "./chroma_db"
 
     # HEMIS OAuth
     HEMIS_CLIENT_ID: str = ""

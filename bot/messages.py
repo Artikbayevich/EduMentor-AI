@@ -30,7 +30,7 @@ _LESSON_TYPE_ICON = {
 # ─── Welcome / auth ───────────────────────────────────────────────────────────
 
 WELCOME = (
-    "👋 Assalomu alaykum! Men <b>Sezgi</b> — aqlli o'quv yordamchingizman.\n\n"
+    "👋 Assalomu alaykum! Men <b>EduMentor AI</b> — aqlli o'quv yordamchingizman.\n\n"
     "🎓 HEMIS tizimiga ulaning va men sizga:\n"
     "  • Dars qoldirishlarni kuzataman\n"
     "  • Imtihon muddatlarini eslataman\n"
@@ -71,7 +71,7 @@ NOT_AUTHENTICATED = (
 # ─── Help ─────────────────────────────────────────────────────────────────────
 
 HELP = (
-    "📖 <b>Sezgi bot — qo'llanma</b>\n\n"
+    "📖 <b>EduMentor AI bot — qo'llanma</b>\n\n"
     "<b>Buyruqlar:</b>\n"
     "  /start     — Botni ishga tushirish / kirish\n"
     "  /status    — Bugungi jadval va NB xulosa\n"
@@ -81,7 +81,7 @@ HELP = (
     "<b>Xabarlar:</b>\n"
     "  Bot dars qoldirganda avtomatik xabar yuboradi.\n"
     "  Barcha materiallar va testlar veb-saytda mavjud.\n\n"
-    "🌐 <a href='{website_url}'>Sezgi platformasi</a>"
+    "🌐 <a href='{website_url}'>EduMentor AI platformasi</a>"
 )
 
 

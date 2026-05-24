@@ -94,6 +94,12 @@ class User(Base):
     leaderboard_entry: Mapped["LeaderboardEntry | None"] = relationship(
         "LeaderboardEntry", back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
+    sessions: Mapped[list["Session"]] = relationship(
+        "Session", foreign_keys="[Session.student_id]", back_populates="student"
+    )
+    mentor_sessions: Mapped[list["Session"]] = relationship(
+        "Session", foreign_keys="[Session.mentor_id]", back_populates="mentor"
+    )
 
     def __repr__(self) -> str:
         return f"<User {self.full_name!r} hemis={self.hemis_id}>"

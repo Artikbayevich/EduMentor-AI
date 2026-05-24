@@ -11,7 +11,7 @@ def setup_logging() -> None:
         colorize=True,
     )
     logger.add(
-        "logs/sezgi.log",
+        "logs/edumentor.log",
         rotation="10 MB",
         retention="7 days",
         compression="zip",

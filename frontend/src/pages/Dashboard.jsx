@@ -1,16 +1,28 @@
 import React from 'react';
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { 
+  BookOpen, 
+  TrendingUp, 
+  Trophy, 
+  Coins, 
+  Calendar, 
+  AlertCircle, 
+  CheckCircle2, 
+  ChevronRight,
+  Clock,
+  Send
+} from 'lucide-react';
 
 export default function Dashboard({ student, subjects, deadlines, chartData }) {
-  // Safe defaults if props are not yet loaded
+  // Safe defaults
   const safeStudent = student || {
     name: 'Talaba',
     university: 'Universitet',
@@ -24,217 +36,285 @@ export default function Dashboard({ student, subjects, deadlines, chartData }) {
   const safeChartData = chartData || [];
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 p-4 sm:p-6 lg:p-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      {/* 1. Header Section - Premium Gradient & Glass */}
+      <header className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 shadow-[0_20px_40px_-15px_rgba(79,70,229,0.5)] p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-white border border-white/10">
         
-        {/* 1. Header Section */}
-        <header className="bg-white rounded-2xl shadow-sm p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border border-gray-100">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
-              Assalomu alaykum, {safeStudent.name} 👋
-            </h1>
-            <p className="text-sm text-gray-500 mt-1 font-medium">{safeStudent.university}</p>
+        {/* Decorative background patterns */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 bg-purple-400 opacity-10 rounded-full blur-2xl pointer-events-none"></div>
+        
+        <div className="relative z-10 flex flex-col sm:items-start text-center sm:text-left">
+          <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold uppercase tracking-wider mb-3 text-blue-100 border border-white/20">
+            {safeStudent.university}
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Xush kelibsiz, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200">{safeStudent.name}</span> 👋
+          </h1>
+          <p className="text-blue-200 mt-2 font-medium opacity-90 text-sm sm:text-base">
+            O'zlashtirish va davomat ko'rsatkichlaringizni kuzatib boring
+          </p>
+        </div>
+        
+        <div className="relative z-10 flex items-center gap-4 bg-white/10 backdrop-blur-xl px-6 py-4 rounded-2xl border border-white/20 shadow-inner hover:scale-105 transition-transform duration-300">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-200 flex items-center justify-center shadow-lg">
+            <Coins className="text-yellow-700 w-6 h-6" />
           </div>
-          <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-xl border border-yellow-200 shadow-inner">
-            <span className="text-xl">💰</span>
-            <div className="flex flex-col">
-              <span className="text-xs text-yellow-700 font-semibold uppercase tracking-wider">EduCoin</span>
-              <span className="text-lg font-bold text-yellow-600 leading-none">{safeStudent.coinBalance}</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Quick Stats Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 font-medium">Jami fanlar</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">{safeStudent.totalSubjects}</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 text-xl">📚</div>
-          </div>
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 font-medium">O'rtacha baho</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">{safeStudent.avgGrade}%</p>
-            </div>
-            <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-green-500 text-xl">📈</div>
-          </div>
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 font-medium">Reytingdagi o'rin</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">#{safeStudent.leaderboardRank}</p>
-            </div>
-            <div className="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center text-purple-500 text-xl">🏆</div>
+          <div className="flex flex-col">
+            <span className="text-xs text-blue-100 font-semibold uppercase tracking-widest opacity-80">EduCoin</span>
+            <span className="text-3xl font-black tracking-tight">{safeStudent.coinBalance}</span>
           </div>
         </div>
+      </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Main Content Column */}
-          <div className="lg:col-span-2 space-y-6">
-            
-            {/* 2. NB Status Cards */}
-            <section className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">NB Holati (Davomat)</h2>
-                <a href="/attendance" className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">Barchasi →</a>
+      {/* Quick Stats Row - Glass Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        {[
+          { label: "Jami fanlar", value: safeStudent.totalSubjects, icon: BookOpen, color: "from-blue-500 to-blue-400", light: "bg-blue-50 text-blue-600" },
+          { label: "O'rtacha baho", value: `${safeStudent.avgGrade}%`, icon: TrendingUp, color: "from-emerald-500 to-emerald-400", light: "bg-emerald-50 text-emerald-600" },
+          { label: "Reytingdagi o'rin", value: `#${safeStudent.leaderboardRank}`, icon: Trophy, color: "from-purple-500 to-purple-400", light: "bg-purple-50 text-purple-600" }
+        ].map((stat, idx) => (
+          <div key={idx} className="group bg-white/60 backdrop-blur-lg p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-white/80 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-sm text-slate-500 font-medium">{stat.label}</p>
+                <p className="text-3xl font-bold text-slate-800 tracking-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-slate-800 group-hover:to-slate-600 transition-colors">
+                  {stat.value}
+                </p>
               </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {safeSubjects.map((subject) => {
-                  let colorClass = 'bg-green-50 border-green-200';
-                  let textColor = 'text-green-700';
-                  let barColor = 'bg-green-500';
-                  let icon = '✅';
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${stat.light} transition-transform group-hover:scale-110 duration-300 shadow-sm`}>
+                <stat.icon strokeWidth={2.5} className="w-6 h-6" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-                  if (subject.riskLevel === 'warning') {
-                    colorClass = 'bg-yellow-50 border-yellow-200';
-                    textColor = 'text-yellow-700';
-                    barColor = 'bg-yellow-500';
-                    icon = '⚠️';
-                  } else if (subject.riskLevel === 'critical') {
-                    colorClass = 'bg-red-50 border-red-200';
-                    textColor = 'text-red-700';
-                    barColor = 'bg-red-500';
-                    icon = '🔴';
-                  }
+      {/* Telegram Connection Banner */}
+      {!safeStudent.telegramLinked && (
+        <div className="relative overflow-hidden bg-gradient-to-r from-blue-500 to-cyan-500 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-white shadow-lg border border-blue-400 hover:shadow-xl transition-shadow duration-300">
+          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center flex-shrink-0">
+              <Send className="w-7 h-7 text-white ml-1" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">Telegram Botni Ulang</h3>
+              <p className="text-blue-50 text-sm mt-1">Darslar, muddatlar va tangalar haqida tezkor xabarnomalar oling</p>
+            </div>
+          </div>
+          <a 
+            href="https://t.me/edu_mentorai_bot?start=connect_web" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="relative z-10 whitespace-nowrap bg-white text-blue-600 px-6 py-3 rounded-xl font-bold text-sm shadow-md hover:scale-105 hover:bg-blue-50 transition-all duration-300"
+          >
+            Ulash
+          </a>
+        </div>
+      )}
 
-                  const percent = Math.min((subject.currentNb / subject.maxNb) * 100, 100);
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Main Content Column */}
+        <div className="lg:col-span-2 space-y-8">
+          
+          {/* 2. NB Status Cards */}
+          <section className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] p-6 sm:p-8 border border-white/80">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-slate-800">NB Holati (Davomat)</h2>
+              <button className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors">
+                Barchasi <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {safeSubjects.map((subject) => {
+                let theme = {
+                  bg: 'bg-emerald-50/50', border: 'border-emerald-100', text: 'text-emerald-700', 
+                  bar: 'bg-gradient-to-r from-emerald-400 to-emerald-500', icon: CheckCircle2
+                };
 
-                  return (
-                    <div key={subject.id} className={`p-4 rounded-xl border ${colorClass} transition-transform hover:scale-[1.02] duration-200 cursor-pointer`}>
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className={`font-semibold ${textColor} line-clamp-1 flex-1 pr-2`}>{subject.name}</h3>
-                        <span className="text-sm" title={subject.riskLevel}>{icon}</span>
+                if (subject.riskLevel === 'warning') {
+                  theme = {
+                    bg: 'bg-amber-50/50', border: 'border-amber-200', text: 'text-amber-700', 
+                    bar: 'bg-gradient-to-r from-amber-400 to-amber-500', icon: AlertCircle
+                  };
+                } else if (subject.riskLevel === 'critical') {
+                  theme = {
+                    bg: 'bg-rose-50/50', border: 'border-rose-200', text: 'text-rose-700', 
+                    bar: 'bg-gradient-to-r from-rose-500 to-rose-600', icon: AlertCircle
+                  };
+                }
+
+                const percent = Math.min((subject.currentNb / subject.maxNb) * 100, 100);
+                const Icon = theme.icon;
+
+                return (
+                  <div key={subject.id} className={`p-5 rounded-2xl border ${theme.bg} ${theme.border} hover:shadow-md transition-shadow cursor-pointer`}>
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className={`font-bold ${theme.text} line-clamp-1 flex-1 pr-2`}>{subject.name}</h3>
+                      <Icon className={`w-5 h-5 ${theme.text}`} />
+                    </div>
+                    
+                    <div className="mb-1">
+                      <div className="flex justify-between text-sm font-bold mb-2">
+                        <span className={theme.text}>{subject.currentNb} / {subject.maxNb} NB</span>
+                        <span className={theme.text}>{subject.remaining} ta qoldi</span>
                       </div>
-                      
-                      <div className="mb-2">
-                        <div className="flex justify-between text-xs font-medium mb-1">
-                          <span className={textColor}>{subject.currentNb} / {subject.maxNb} NB</span>
-                          <span className={textColor}>{subject.remaining} ta qoldi</span>
-                        </div>
-                        <div className="h-2 w-full bg-white/50 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full ${barColor} rounded-full transition-all duration-500`}
-                            style={{ width: `${percent}%` }}
-                          />
-                        </div>
+                      <div className="h-2.5 w-full bg-white/60 rounded-full overflow-hidden shadow-inner">
+                        <div 
+                          className={`h-full ${theme.bar} rounded-full transition-all duration-1000 ease-out`}
+                          style={{ width: `${percent}%` }}
+                        />
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-              {safeSubjects.length === 0 && (
-                <div className="text-center py-8 text-gray-400 font-medium">NB ma'lumotlari yo'q</div>
-              )}
-            </section>
-
-            {/* 4. Subject Performance Chart */}
-            <section className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Davomat dinamikasi</h2>
-              <div className="h-[300px] w-full">
-                {safeChartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={safeChartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                      <XAxis 
-                        dataKey="week" 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fill: '#6b7280', fontSize: 12 }} 
-                        dy={10}
-                      />
-                      <YAxis 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fill: '#6b7280', fontSize: 12 }}
-                        domain={[0, 100]}
-                        tickFormatter={(val) => `${val}%`}
-                      />
-                      <Tooltip 
-                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        formatter={(value) => [`${value}%`, 'Davomat']}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="attendance" 
-                        stroke="#3b82f6" 
-                        strokeWidth={3}
-                        dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 font-medium">
-                    Grafik uchun ma'lumot yetarli emas
                   </div>
-                )}
+                );
+              })}
+            </div>
+            {safeSubjects.length === 0 && (
+              <div className="text-center py-10">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle2 className="w-8 h-8 text-slate-400" />
+                </div>
+                <p className="text-slate-500 font-medium">Sizda hali NB lar qayd etilmagan.</p>
               </div>
-            </section>
+            )}
+          </section>
 
-          </div>
+          {/* 4. Subject Performance Chart - Area Gradient */}
+          <section className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] p-6 sm:p-8 border border-white/80">
+            <h2 className="text-2xl font-bold text-slate-800 mb-8">Davomat dinamikasi</h2>
+            <div className="h-[320px] w-full">
+              {safeChartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={safeChartData} margin={{ top: 5, right: 0, bottom: 0, left: -20 }}>
+                    <defs>
+                      <linearGradient id="colorAttendance" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.5} />
+                    <XAxis 
+                      dataKey="week" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: '#64748b', fontSize: 13, fontWeight: 500 }} 
+                      dy={15}
+                    />
+                    <YAxis 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: '#64748b', fontSize: 13, fontWeight: 500 }}
+                      domain={[0, 100]}
+                      tickFormatter={(val) => `${val}%`}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        borderRadius: '16px', 
+                        border: 'none', 
+                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        backdropFilter: 'blur(8px)',
+                        fontWeight: 600,
+                        color: '#0f172a'
+                      }}
+                      itemStyle={{ color: '#4f46e5', fontWeight: 700 }}
+                      formatter={(value) => [`${value}%`, 'Davomat']}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="attendance" 
+                      stroke="#4f46e5" 
+                      strokeWidth={4}
+                      fillOpacity={1} 
+                      fill="url(#colorAttendance)" 
+                      activeDot={{ r: 8, strokeWidth: 0, fill: '#4f46e5', style: {filter: 'drop-shadow(0px 4px 6px rgba(79, 70, 229, 0.5))'} }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
+                  <TrendingUp className="w-12 h-12 mb-2 opacity-50" />
+                  <span className="font-medium">Grafik uchun ma'lumot yetarli emas</span>
+                </div>
+              )}
+            </div>
+          </section>
 
-          {/* Sidebar Column */}
-          <div className="space-y-6">
+        </div>
+
+        {/* Sidebar Column */}
+        <div className="space-y-8">
+          
+          {/* 3. Upcoming Deadlines */}
+          <section className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] p-6 sm:p-8 border border-white/80 sticky top-24">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-indigo-500" /> Muddatlar
+              </h2>
+              <span className="bg-indigo-50 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-md border border-indigo-100">
+                7 kun
+              </span>
+            </div>
             
-            {/* 3. Upcoming Deadlines */}
-            <section className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 sticky top-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Yaqin muddatlar</h2>
-                <span className="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded-lg">7 kun</span>
-              </div>
-              
-              <div className="space-y-3">
-                {safeDeadlines.map((deadline) => {
-                  const isUrgent = deadline.daysAway <= 2;
-                  const isToday = deadline.daysAway === 0;
+            <div className="space-y-4">
+              {safeDeadlines.map((deadline) => {
+                const isUrgent = deadline.daysAway <= 2;
+                const isToday = deadline.daysAway === 0;
 
-                  return (
-                    <div 
-                      key={deadline.id} 
-                      className={`p-3 rounded-xl border flex gap-3 transition-colors ${
-                        isUrgent ? 'bg-red-50/50 border-red-100' : 'bg-white border-gray-100 hover:border-blue-100'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-xl ${
-                        deadline.type === 'exam' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
+                return (
+                  <div 
+                    key={deadline.id} 
+                    className={`group relative p-4 rounded-2xl border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${
+                      isUrgent ? 'bg-rose-50/30 border-rose-100 hover:border-rose-300' : 'bg-white border-slate-100 hover:border-indigo-200'
+                    }`}
+                  >
+                    <div className="flex gap-4">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                        deadline.type === 'Oraliq nazorat' || deadline.type === 'Yakuniy' 
+                          ? 'bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600 group-hover:from-indigo-200 group-hover:to-purple-200' 
+                          : 'bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-500 group-hover:from-blue-100 group-hover:to-cyan-100'
                       }`}>
-                        {deadline.type === 'exam' ? '📝' : '📌'}
+                        {deadline.type === 'Oraliq nazorat' || deadline.type === 'Yakuniy' ? <Trophy className="w-5 h-5" /> : <BookOpen className="w-5 h-5" />}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-900 text-sm truncate">{deadline.subject}</h4>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-xs text-gray-500 capitalize">{deadline.type}</span>
-                          <span className="text-gray-300">•</span>
-                          <span className={`text-xs font-bold ${
-                            isToday ? 'text-red-600' : isUrgent ? 'text-orange-500' : 'text-blue-600'
+                      <div className="flex-1 min-w-0 flex flex-col justify-center">
+                        <h4 className="font-bold text-slate-800 text-[15px] truncate">{deadline.subject}</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs font-semibold text-slate-500">{deadline.type}</span>
+                          <span className="text-slate-300">•</span>
+                          <span className={`text-xs font-bold flex items-center gap-1 ${
+                            isToday ? 'text-rose-600' : isUrgent ? 'text-amber-600' : 'text-indigo-600'
                           }`}>
-                            {isToday ? 'Bugun!' : `${deadline.daysAway} kun qoldi`}
+                            <Clock className="w-3 h-3" />
+                            {isToday ? 'Bugun!' : `${deadline.daysAway} kun`}
                           </span>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
-
-                {safeDeadlines.length === 0 && (
-                  <div className="text-center py-6">
-                    <div className="text-3xl mb-2">🎉</div>
-                    <p className="text-gray-500 text-sm font-medium">Yaqin 7 kunda hech qanday muddat yo'q</p>
                   </div>
-                )}
-              </div>
-              
-              <button className="w-full mt-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl transition-colors border border-gray-200">
-                To'liq jadvalni ko'rish
-              </button>
-            </section>
-            
-          </div>
-        </div>
+                );
+              })}
 
+              {safeDeadlines.length === 0 && (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                  </div>
+                  <p className="text-slate-500 text-sm font-medium">Yaqin 7 kunda hech qanday muddat yo'q, dam oling!</p>
+                </div>
+              )}
+            </div>
+            
+            <button className="w-full mt-6 py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-bold rounded-xl transition-colors border border-slate-200/60 shadow-sm">
+              To'liq taqvimni ochish
+            </button>
+          </section>
+          
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 """
-bot/notification_scheduler.py — APScheduler jobs for Sezgi bot.
+bot/notification_scheduler.py — APScheduler jobs for EduMentor AI bot.
 
 Jobs:
   • daily_nb_check()    — 23:30  Asia/Tashkent  (new NB detection)

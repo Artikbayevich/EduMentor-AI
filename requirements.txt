@@ -45,7 +45,13 @@ httpx==0.27.0
 # Logging
 loguru==0.7.2
 
-# ── RAG pipeline (Mocked for Pitch) ──────────────────────────────────────────
+# ── RAG pipeline ──────────────────────────────────────────────────────────────
+langchain==0.2.5
+langchain-community==0.2.5
+langchain-core==0.2.9
+chromadb==0.5.3
+sentence-transformers==3.0.1
+pypdf==4.2.0
 # Ollama Python client (thin wrapper around the REST API)
 ollama==0.2.1
 

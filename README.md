@@ -1,4 +1,4 @@
-# Sezgi – Student Support Platform
+# EduMentor AI – Student Support Platform
 
 A FastAPI-powered student support platform with PostgreSQL and Redis.
 

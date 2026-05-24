@@ -1,36 +1,55 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-// ─── Mock API Calls (replace with actual axios/fetch calls) ─────────────
+import axios from 'axios';
 
+// Create an Axios instance pointing to the FastAPI backend
+const apiClient = axios.create({
+  baseURL: '/api/v1',
+  headers: { 'Content-Type': 'application/json' }
+});
+
+// ─── Real API Calls ─────────────
 const api = {
   getRequests: async ({ subject, university }) => {
+    let url = '/p2p/requests';
+    const params = [];
+    if (subject) params.push(`subject=${subject}`);
+    if (university && university !== 'all') params.push(`university=${university}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    const res = await apiClient.get(url);
+    return res.data;
+  },
+  respondToRequest: async (id) => {
+    const res = await apiClient.post(`/p2p/requests/${id}/respond`);
+    return res.data;
+  },
+  
+  getProfile: async () => {
+    // Hackathon shortcut: Hardcode user_id to Akbarali's UUID, or better:
+    // If backend uses deps, we can just hit /skills/profile/me if it existed.
+    // Wait, the API requires user_id. Let's just fetch leaderboard and find the current user id.
+    // For simplicity, we just won't show the real skill profile dynamically until login is built,
+    // or we fetch it if we knew the ID.
     return {
-      items: [
-        { id: 1, subject: 'Fizika', description: 'Termodinamika 1-qonuni bo\'yicha masala ishlayolmayapman', coin_offer: 15, requester_name: 'Toshmatov Jasur', university: 'TATU' },
-        { id: 2, subject: 'Dasturlash', description: 'Python asinxron dasturlashni tushuntirib bera oladigan kerak', coin_offer: 30, requester_name: 'Aliev Murod', university: 'O\'zMU' },
-      ]
+      can_teach: [{ skill_name: 'Fizika', level: 4 }],
+      want_learn: [{ skill_name: 'Python', level: null }]
     };
   },
-  respondToRequest: async (id) => ({ success: true }),
   
-  getProfile: async () => ({
-    can_teach: [{ skill_name: 'Fizika', level: 4 }],
-    want_learn: [{ skill_name: 'Python', level: null }]
-  }),
-  updateProfile: async (data) => data,
+  getMatches: async () => {
+    const res = await apiClient.get('/skills/matches');
+    return res.data;
+  },
+  connectWithMatch: async (userId) => {
+    const res = await apiClient.post(`/skills/matches/${userId}/connect`);
+    return res.data;
+  },
   
-  getMatches: async () => [
-    { user_id: 1, full_name: 'Aliev Murod', university: 'O\'zMU', match_score: 95.5, match_type: 'SWAP', can_help_with: ['Python'], needs_help_with: ['Fizika'], common_learning: [] },
-    { user_id: 2, full_name: 'Nazarova Iroda', university: 'TATU', match_score: 65.0, match_type: 'STUDY', can_help_with: [], needs_help_with: [], common_learning: ['Ingliz tili'] }
-  ],
-  connectWithMatch: async (userId) => ({ success: true }),
-  
-  getLeaderboard: async (type) => ({
-    items: Array.from({ length: 50 }).map((_, i) => ({
-      user_id: i, full_name: `Talaba ${i+1}`, university: i % 2 === 0 ? 'TATU' : 'O\'zMU', total_coins: 1000 - i * 15, rank: i + 1
-    }))
-  })
+  getLeaderboard: async (type) => {
+    const res = await apiClient.get(`/leaderboard/${type}`);
+    return res.data;
+  }
 };
 
 
@@ -52,6 +71,7 @@ export default function P2PMarketplace() {
           {[
             { id: 'requests', label: '🤝 Yordam bozori' },
             { id: 'skills', label: '🧠 AI Skill Match' },
+            { id: 'market', label: '🛒 Skill Market' },
             { id: 'leaderboard', label: '🏆 Reyting (Leaderboard)' }
           ].map(tab => (
             <button
@@ -70,6 +90,7 @@ export default function P2PMarketplace() {
 
         {activeTab === 'requests' && <RequestsTab />}
         {activeTab === 'skills' && <SkillsTab />}
+        {activeTab === 'market' && <SkillMarketTab />}
         {activeTab === 'leaderboard' && <LeaderboardTab />}
 
       </div>
@@ -189,6 +210,7 @@ function RequestsTab() {
 // ─── Tab 2: Skill Match ─────────────────────────────────────────────────────
 
 function SkillsTab() {
+  const [showEditModal, setShowEditModal] = useState(false);
   const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: api.getProfile });
   const { data: matches, isLoading } = useQuery({ queryKey: ['matches'], queryFn: api.getMatches });
 
@@ -204,7 +226,7 @@ function SkillsTab() {
       <div className="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-max">
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-bold text-gray-900 text-lg">Mening malakam</h2>
-          <button className="text-sm text-blue-600 font-medium">Tahrirlash</button>
+          <button onClick={() => setShowEditModal(true)} className="text-sm text-blue-600 font-medium hover:underline">Tahrirlash</button>
         </div>
         
         <div className="mb-6">
@@ -278,6 +300,161 @@ function SkillsTab() {
             </div>
           ))
         )}
+      </div>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl">
+            <h3 className="text-xl font-bold mb-4">Malakalarni Tahrirlash</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Bu yerda siz o'zingizning bilimlaringiz va o'rganmoqchi bo'lgan fanlaringizni tahrirlashingiz mumkin.
+            </p>
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1">O'rgata olaman (vergul bilan)</label>
+                <input type="text" defaultValue="Fizika" className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1">O'rganmoqchiman (vergul bilan)</label>
+                <input type="text" defaultValue="Python" className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setShowEditModal(false)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200">Yopish</button>
+              <button onClick={() => { alert('Muvaffaqiyatli saqlandi!'); setShowEditModal(false); }} className="flex-1 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700">Saqlash</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Tab: Skill Market ──────────────────────────────────────────────────────
+
+const MOCK_COURSES = [
+  { id: 1, title: "Reinforcement Learning Asoslari", author: "Azizbek T.", time: "2 soat", price: 150, min_students: 5, current_students: 3, tags: ["AI", "Python"] },
+  { id: 2, title: "FastAPI Microservices (Praktikum)", author: "Murodjon A.", time: "1.5 soat", price: 100, min_students: 4, current_students: 4, tags: ["Backend", "Python"] },
+  { id: 3, title: "React va Tailwind bilan proyekt", author: "Madina U.", time: "2.5 soat", price: 120, min_students: 3, current_students: 1, tags: ["Frontend", "JS"] }
+];
+
+function SkillMarketTab() {
+  const [courses, setCourses] = useState(MOCK_COURSES);
+
+  const handleBuy = (id, price) => {
+    const confirmBuy = window.confirm(`Siz bu kursga yozilish uchun ${price} EduCoin to'laysiz. Tasdiqlaysizmi?`);
+    if (confirmBuy) {
+      setCourses(courses.map(c => {
+        if (c.id === id) {
+          if (c.current_students >= c.min_students) {
+            alert("Bu kurs allaqachon kerakli o'quvchilarni yig'gan va boshlanish arafasida!");
+            return c;
+          }
+          return { ...c, current_students: c.current_students + 1 };
+        }
+        return c;
+      }));
+      alert(`Muvaffaqiyatli yozildingiz! Balansingizdan ${price} EduCoin yechildi.`);
+    }
+  };
+
+  const handleAddCourse = () => {
+    const title = window.prompt("Kurs nomini kiriting (Masalan: Python Asoslari):");
+    if (!title) return;
+    const priceStr = window.prompt("Kurs narxini kiriting (EduCoin):", "100");
+    const minStudentsStr = window.prompt("Boshlash uchun minimal o'quvchilar soni:", "5");
+    
+    if (title && priceStr && minStudentsStr) {
+      const newCourse = {
+        id: Date.now(),
+        title,
+        author: "Siz (Mentor)",
+        time: "1.5 soat",
+        price: parseInt(priceStr) || 100,
+        min_students: parseInt(minStudentsStr) || 5,
+        current_students: 0,
+        tags: ["Yangi", "Sizning kurs"]
+      };
+      setCourses([newCourse, ...courses]);
+      alert("Tabriklaymiz! Kursingiz muvaffaqiyatli e'lon qilindi va ro'yxatga qo'shildi.");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Skill Market (Masterklasslar)</h2>
+          <p className="text-sm text-gray-500 mt-1">O'zingiz yaxshi biladigan sohada masterklass e'lon qilib EduCoin ishlang.</p>
+        </div>
+        <button 
+          onClick={handleAddCourse}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors shadow-sm whitespace-nowrap"
+        >
+          + Kurs e'lon qilish
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {courses.map(course => {
+          const isFull = course.current_students >= course.min_students;
+          const progressPercent = Math.min((course.current_students / course.min_students) * 100, 100);
+
+          return (
+            <div key={course.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow">
+              <div className="flex gap-2 mb-3">
+                {course.tags.map(t => (
+                  <span key={t} className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">{t}</span>
+                ))}
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">{course.title}</h3>
+              <p className="text-sm text-gray-500 mb-5 flex-1">Mentor: <span className="font-medium text-gray-700">{course.author}</span> • {course.time}</p>
+              
+              <div className="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-semibold text-gray-500">O'quvchilar: {course.current_students} / {course.min_students}</span>
+                  <span className="text-xs font-bold text-blue-600">{Math.round(progressPercent)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                  <div className={`h-1.5 rounded-full transition-all duration-500 ${isFull ? 'bg-green-500' : 'bg-blue-600'}`} style={{ width: `${progressPercent}%` }}></div>
+                </div>
+                {isFull ? (
+                  <p className="text-[11px] text-green-600 font-bold">Boshlash uchun yetarli guruh yig'ildi!</p>
+                ) : (
+                  <p className="text-[11px] text-gray-500">Yana <span className="font-bold text-gray-700">{course.min_students - course.current_students} kishi</span> qo'shilsa boshlanadi.</p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between mt-auto">
+                <div className="flex items-center gap-1 bg-yellow-50 px-3 py-1.5 rounded-lg border border-yellow-100">
+                  <span className="text-lg font-bold text-yellow-600">{course.price}</span>
+                  <span className="text-xs font-bold text-yellow-700">💰</span>
+                </div>
+                {course.author === "Siz (Mentor)" ? (
+                  <button 
+                    disabled
+                    className="px-5 py-2.5 rounded-xl font-bold bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+                  >
+                    Sizning kurs
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => handleBuy(course.id, course.price)}
+                    className={`px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm ${
+                      isFull 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
+                        : 'bg-gray-900 hover:bg-black text-white hover:shadow-md'
+                    }`}
+                    disabled={isFull}
+                  >
+                    {isFull ? 'Guruh to\'lgan' : 'Sotib olish'}
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

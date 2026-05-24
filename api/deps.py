@@ -29,12 +29,16 @@ async def get_current_user(
     return user
 
 
-async def get_current_active_user(
-    current_user: User = Depends(get_current_user),
-) -> User:
-    if not current_user.is_active:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
-    return current_user
+async def get_current_active_user(db: AsyncSession = Depends(get_db)):
+    # Hackathon Demo Mode: Always return the main seeded user
+    from sqlalchemy import select
+    from models.user import User
+    
+    result = await db.execute(select(User).where(User.hemis_id == "admin_hemis"))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Main demo user not found (did you run seed.py?)")
+    return user
 
 
 def require_role(*roles: UserRole):
